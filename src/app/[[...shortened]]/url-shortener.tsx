@@ -41,34 +41,39 @@ export default function URLShortener() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex gap-2">
-        <input 
-          type="text" 
-          name="url" 
-          autoComplete="off"
-          className={`w-[450px] p-2 rounded-md border border-gray-300 focus:border-indigo-300 text-sm outline-none ` + (error ? 'border-red-300 focus:border-red-300' : '')}
-          ref={inputRef}
-          value={url}
-          onChange={e => setUrl(e.target.value)}
-        />
-        <button 
-          type="submit"
-          className="p-2 px-4 rounded-md bg-indigo-700 hover:bg-indigo-600 text-white text-sm"
-        >
-          Shorten URL
-        </button>
-        <button 
-          className="p-2 px-4 rounded-md text-sm bg-gray-100 hover:bg-gray-200"
-          onClick={handleClear}
-        >
-          Clear
-        </button>
-      </div>
-      {error && (
-        <div className="text-red-700 text-sm">
-          {error}
+      <div className="flex flex-col gap-4">
+        <div>
+          <input 
+            type="text" 
+            name="url" 
+            autoComplete="off"
+            className={`w-[650px] p-2 rounded-md border border-gray-300 focus:border-indigo-300 text-sm outline-none ` + (error ? 'border-red-300 focus:border-red-300' : '')}
+            placeholder="Enter long URL"
+            ref={inputRef}
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+          />
+          {error && (
+            <div className="text-red-700 text-sm text-center">
+              {error}
+            </div>
+          )}
         </div>
-      )}
+        <div className="flex gap-2 items-center justify-center">
+          <button 
+            type="submit"
+            className="p-2 w-[150px] rounded-md bg-indigo-700 hover:bg-indigo-600 text-white text-sm"
+          >
+            Shorten URL
+          </button>
+          <button 
+            className="p-2 w-[150px] rounded-md text-sm bg-gray-100 hover:bg-gray-200"
+            onClick={handleClear}
+          >
+            Clear
+          </button>
+        </div>
+      </div>
     </form>
   )
 }
