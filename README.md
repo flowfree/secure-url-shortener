@@ -1,3 +1,3 @@
-URL Shortener
-=============
-My personal URL shortner app, built with Next.js.
+Secure URL Shortener
+====================
+Simple URL shortener project with cybersecurity in mind.
