@@ -1,10 +1,53 @@
 'use server'
 
 import { PrismaClient } from '@prisma/client'
+import axios, { AxiosResponse } from 'axios'
 
 const prisma = new PrismaClient()
 
-export async function shortenAndSaveUrl(original: string): Promise<string> {
+interface SafeBrowsingResponse {
+  matches?: any[];
+}
+
+export async function checkUrlWithSafeBrowsing(url: string) {
+  const apiKey = process.env.SAFE_BROWSING_API_KEY
+  const apiUrl = 'https://safebrowsing.googleapis.com/v4/threatMatches:find'
+
+  try {
+    const response: AxiosResponse<SafeBrowsingResponse> = await axios.post(apiUrl, {
+      client: {
+        clientId: 'secure-url-shortener',
+        clientVersion: '1.0.0',
+      },
+      threatInfo: {
+        threatTypes: ['MALWARE', 'SOCIAL_ENGINEERING'],
+        platformTypes: ['ANY_PLATFORM'],
+        threatEntryTypes: ['URL'],
+        threatEntries: [{ url }],
+      },
+    }, {
+      params: { key: apiKey },
+    })
+
+    if (response.data.matches && response.data.matches.length > 0) {
+      const threats = response.data.matches.map((match) => match.threatType);
+      return { 
+        success: true, 
+        safe: false, 
+        message: `The URL is not safe. Detected threat: ${threats.join(', ')}` 
+      }
+    } else {
+      return { success: true, safe: true }
+    }
+  } catch (error) {
+    return { 
+      success: false, 
+      message: `Error checking URL with Google Safe Browsing API: ${error}` 
+    }
+  }
+}
+
+export async function shortenAndSaveUrl(original: string) {
   // Check if the original URL already exists in the database
   const existingUrl = await prisma.url.findUnique({
     where: { original }
@@ -12,18 +55,23 @@ export async function shortenAndSaveUrl(original: string): Promise<string> {
 
   if (existingUrl) {
     // If the URL already exists, return the already shortened URL
-    return existingUrl.shortened
-  } else {
-    // Generate a shortened URL
-    const shortened = await generateShortenedUrl()
+    return { success: true, shortened: existingUrl.shortened }
+  } 
 
-    // Save the new URL to the database
-    const newUrl = await prisma.url.create({
-      data: { original, shortened },
-    })
+  const { success, safe, message } = await checkUrlWithSafeBrowsing(original)
+  if (success === false || safe === false) {
+    return { success, safe, message }
+  } 
 
-    return shortened
-  }
+  // Generate a shortened URL
+  const shortened = await generateShortenedUrl()
+
+  // Save the new URL to the database
+  const newUrl = await prisma.url.create({
+    data: { original, shortened },
+  })
+
+  return { success: true, shortened }
 }
 
 export async function getOriginalUrl(shortened: string) {

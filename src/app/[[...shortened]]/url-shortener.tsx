@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { shortenAndSaveUrl } from './actions'
+import { checkUrlWithSafeBrowsing, shortenAndSaveUrl } from './actions'
 
 export default function URLShortener() {
   const [url, setUrl] = useState('')
@@ -25,11 +25,16 @@ export default function URLShortener() {
       return
     }
 
+    setError('')
+
     try {
-      const path = await shortenAndSaveUrl(url)
-      setUrl(window.location.origin + '/' + path)
+      const { success, safe, message, shortened } = await shortenAndSaveUrl(url)
+      if (success === false || safe === false) {
+        setError(message || 'Unknown error.')
+        return
+      }
+      setUrl(window.location.origin + '/' + shortened)
     } finally {
-      setError('')
     }
   }
 
@@ -47,14 +52,14 @@ export default function URLShortener() {
             type="text" 
             name="url" 
             autoComplete="off"
-            className={`w-[650px] p-2 rounded-md border border-gray-300 focus:border-indigo-300 text-sm outline-none ` + (error ? 'border-red-300 focus:border-red-300' : '')}
+            className={`w-[750px] p-2 rounded-md border border-gray-300 focus:border-green-400 text-base outline-none ` + (error ? 'border-red-300 focus:border-red-300' : '')}
             placeholder="Enter long URL"
             ref={inputRef}
             value={url}
             onChange={e => setUrl(e.target.value)}
           />
           {error && (
-            <div className="text-red-700 text-sm text-center">
+            <div className="mt-2 text-red-700 text-sm">
               {error}
             </div>
           )}
@@ -62,12 +67,12 @@ export default function URLShortener() {
         <div className="flex gap-2 items-center justify-center">
           <button 
             type="submit"
-            className="p-2 w-[150px] rounded-md bg-indigo-700 hover:bg-indigo-600 text-white text-sm"
+            className="p-2 w-[150px] rounded-md bg-green-700 hover:bg-green-600 text-white text-base font-bold"
           >
             Shorten URL
           </button>
           <button 
-            className="p-2 w-[150px] rounded-md text-sm bg-gray-100 hover:bg-gray-200"
+            className="p-2 w-[150px] rounded-md text-base bg-gray-100 hover:bg-gray-200 font-bold"
             onClick={handleClear}
           >
             Clear
