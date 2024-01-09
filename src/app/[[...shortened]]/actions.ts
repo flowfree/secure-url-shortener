@@ -20,7 +20,13 @@ export async function checkUrlWithSafeBrowsing(url: string) {
         clientVersion: '1.0.0',
       },
       threatInfo: {
-        threatTypes: ['MALWARE', 'SOCIAL_ENGINEERING'],
+        threatTypes: [
+          'MALWARE', 
+          'SOCIAL_ENGINEERING',
+          'UNWANTED_SOFTWARE',
+          'POTENTIALLY_HARMFUL_APPLICATION',
+          'THREAT_TYPE_UNSPECIFIED'
+        ],
         platformTypes: ['ANY_PLATFORM'],
         threatEntryTypes: ['URL'],
         threatEntries: [{ url }],
