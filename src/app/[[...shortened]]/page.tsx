@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { getOriginalUrl } from './actions'
 import URLShortener from './url-shortener'
+import { Header, Footer } from '../components'
 
 export default async function Page({
   params: { shortened }
@@ -26,6 +27,8 @@ export default async function Page({
 
   return (
     <div className="h-screen flex flex-col justify-center">
+      <Header />
+
       <div className="grow flex flex-col items-center justify-center gap-8">
         <div className="flex flex-col gap-2 items-center">
           <h1 className="text-3xl font-bold tracking-tight">
@@ -40,6 +43,8 @@ export default async function Page({
         </div>
         <URLShortener />
       </div>
+
+      <Footer />
     </div>
   )
 }
