@@ -5,7 +5,7 @@ Simple URL shortener project with cybersecurity in mind.
 ## Running on development machine
 Once you have cloned this repo, follow these steps to run the app on your local machine:
 
-1.  Rename the `.env_local_sample` file into `.env.local` and paste your Safe Browser API key:
+1.  Rename the `.env_local_sample` file into `.env.local` and paste your [Safe Browsing API key](https://developers.google.com/safe-browsing/v4):
 
         SAFE_BROWSING_API_KEY=<your api key>
 
