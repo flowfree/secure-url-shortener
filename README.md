@@ -24,11 +24,11 @@ Once you have cloned this repo, follow these steps to run the app on your local 
 
         npx prisma migrate dev
 
-    This command will create the SQLite database and apply the DB migrations.
+    This command will create the SQLite database and apply the DB migrations. Note that it is `npx` instead of `npm`.
 
 1.  Run the server
 
-        npx run dev
+        npm run dev
 
 Visit `http://localhost:8000` using your browser to open the app.
 
